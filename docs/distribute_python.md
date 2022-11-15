@@ -1,16 +1,12 @@
 # How to distribute python tools cross-platform?
-
-- https://stackoverflow.com/questions/1558385/how-can-i-distribute-python-programs
+An open question is how to distribute python code cross platform.
+Possible solutions are listed in https://stackoverflow.com/questions/1558385/how-can-i-distribute-python-programs
 
 ## anaconda
-Anaconda
-
-mkenvironment
-
+Simplest solution is using python packages in combination with anaconda.
 
 ## pyinstaller
 https://pyinstaller.org/en/stable/
-
 
 ## briefcase
 https://github.com/beeware/briefcase
