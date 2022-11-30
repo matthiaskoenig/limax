@@ -6,7 +6,7 @@ from pymetadata import log
 from pymetadata.console import console
 
 from limax import __citation__, __version__
-from limax.io import read_limax_csv
+from limax.io import read_limax_dir, read_limax_file
 
 
 logger = log.get_logger(__name__)
@@ -63,7 +63,9 @@ def main() -> None:
     console.print("Example (single file):")
     console.print("    limax -i patient1.csv -o limax_example_processed.csv")
     console.print("Example (folder):")
-    console.print("    limax --input_dir limax_examples --output_dir limax_examples_processed")
+    console.print(
+        "    limax --input_dir limax_examples --output_dir limax_examples_processed"
+    )
     console.rule(style="white")
 
     options, args = parser.parse_args()
@@ -91,7 +93,7 @@ def main() -> None:
             _parser_message(f"'--input {input_path}' does not exist.")
         if not input_path.is_file():
             _parser_message(f"'--input {input_path}' is not a file.")
-        read_limax_csv(limax_csv=input_path, output_path=output_path)
+        read_limax_file(limax_csv=input_path, output_path=output_path)
 
     # process folder with LiMAx raw data
     elif options.input_dir_path and options.output_dir_path:
@@ -103,13 +105,8 @@ def main() -> None:
             _parser_message(f"'--input {input_dir_path}' is not a directory.")
 
         # process all files
-        for limax_csv in input_dir_path.glob("**/*.csv"):
-            limax_csv_rel = limax_csv.relative_to(input_dir_path)
-            output_path: Path = Path(output_dir_path / limax_csv_rel)
-            print(output_path)
-            read_limax_csv(limax_csv=limax_csv, output_path=output_path)
+        read_limax_dir(input_dir=input_dir_path, output_dir=output_dir_path)
 
 
 if __name__ == "__main__":
     main()
-

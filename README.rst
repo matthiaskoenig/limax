@@ -94,19 +94,28 @@ After installation LiMAx analysis can be performed using the :code:`limax` comma
     
     ────────────────────────────────────────────────────────────────────────────────
     💉 LIMAX ANALYSIS 💉
-    Version 0.1.0 (https://github.com/matthiaskoenig/limax)
+    Version 0.1.2 (https://github.com/matthiaskoenig/limax)
     Citation https://doi.org/10.5281/zenodo.3708271
     ────────────────────────────────────────────────────────────────────────────────
-    Required argument '--input' missing
+    Example (single file):
+        limax -i patient1.csv -o limax_example_processed.csv
+    Example (folder):
+        limax --input_dir limax_examples --output_dir limax_examples_processed
+    ────────────────────────────────────────────────────────────────────────────────
+    Required argument '--input' or '--input_dir' missing
     Usage: limax [options]
     
     Options:
       -h, --help            show this help message and exit
       -i INPUT_PATH, --input=INPUT_PATH
-                            Path to LiMAx raw file.
+                            Path to input LiMAx raw file.
       -o OUTPUT_PATH, --output=OUTPUT_PATH
-                            Path to processed LiMAx file (without patient data) as
-                            '*.csv'.
+                            Path to output processed LiMAx file (without patient
+                            data) as '*.csv'.
+      --input_dir=INPUT_DIR_PATH
+                            Path to input folder with LiMAx raw files as '*.csv'.
+      --output_dir=OUTPUT_DIR_PATH
+                            Path to output folder with processed LiMAx files
     ────────────────────────────────────────────────────────────────────────────────
 
 
