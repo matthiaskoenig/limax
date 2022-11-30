@@ -2,8 +2,8 @@
 import argparse
 from pathlib import Path
 
-from pymetadata import log
-from pymetadata.console import console
+from limax import log
+from limax.console import console
 
 from limax import __citation__, __version__
 from limax.io import read_limax_dir, read_limax_file
