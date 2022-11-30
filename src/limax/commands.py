@@ -45,7 +45,7 @@ def main() -> None:
     )
 
     console.rule(style="white")
-    console.print(":lung: LIMAX ANALYSIS :lung:")
+    console.print(":syringe: LIMAX ANALYSIS :syringe:")
     console.print(f"Version {__version__} (https://github.com/matthiaskoenig/limax)")
     console.print(f"Citation {__citation__}")
     console.rule(style="white")

@@ -2,6 +2,5 @@
 LiMAx tools
 
 ## TODO:
-- [ ] create command with documentation (conda environment)
+- [ ] zenodo integration and updated link
 - [ ] write script for anonymization/updated parsing functions
-- [ ] documentation of commands

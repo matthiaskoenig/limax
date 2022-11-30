@@ -60,9 +60,52 @@ How to cite
    :target: https://doi.org/10.5281/zenodo.5308801
    :alt: Zenodo DOI
 
+Installation
+============
+`limax` is available from `pypi <https://pypi.python.org/pypi/limax>`__ and 
+can be installed via:: 
+
+    pip install limax
+
+Best practise is to setup a virtual environment example via conda and install the package::
+
+    conda create -n limax python=3.10
+    conda activate limax
+    (limax) pip install limax --upgrade
+
+
+
+Usage
+=====
+
+Command line tool
+-----------------
+
+After installation LiMAx analysis can be performed using the :code:`limax` command line tool
+
+.. code:: bash
+
+    $ limax
+    
+    ────────────────────────────────────────────────────────────────────────────────
+    💉 LIMAX ANALYSIS 💉
+    Version 0.1.0 (https://github.com/matthiaskoenig/limax)
+    Citation https://doi.org/10.5281/zenodo.3708271
+    ────────────────────────────────────────────────────────────────────────────────
+    Required argument '--input' missing
+    Usage: limax [options]
+    
+    Options:
+      -h, --help            show this help message and exit
+      -i INPUT_PATH, --input=INPUT_PATH
+                            Path to LiMAx raw file.
+      -o OUTPUT_PATH, --output=OUTPUT_PATH
+                            Path to processed LiMAx file (without patient data) as
+                            '*.csv'.
+    ────────────────────────────────────────────────────────────────────────────────
+
 License
 =======
-
 * Source Code: `LGPLv3 <http://opensource.org/licenses/LGPL-3.0>`__
 * Documentation: `CC BY-SA 4.0 <http://creativecommons.org/licenses/by-sa/4.0/>`__
 
@@ -86,15 +129,8 @@ and by the German Research Foundation (DFG) within the Research Unit Programme F
 "`QuaLiPerF <https://qualiperf.de>`__ (Quantifying Liver Perfusion-Function Relationship in Complex Resection - 
 A Systems Medicine Approach)" by grant number 436883643 and by grant number 465194077 (Priority Programme SPP 2311, Subproject SimLivA).
 
-Installation
-============
-`limax` is available from `pypi <https://pypi.python.org/pypi/limax>`__ and 
-can be installed via:: 
-
-    pip install limax
-
 Develop version
----------------
+===============
 The latest develop version can be installed via::
 
     pip install git+https://github.com/matthiaskoenig/limax.git@develop
@@ -108,5 +144,6 @@ Or via cloning the repository and installing via::
 To install for development use::
 
     pip install -e .[development]
+
 
 © 2022 Matthias König
