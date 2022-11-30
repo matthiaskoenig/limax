@@ -2,4 +2,4 @@ include LICENSE
 include README.rst
 include src/limax/py.typed
 
-recursive-include src/limax/resources *
+recursive-include src/limax/resources/ *

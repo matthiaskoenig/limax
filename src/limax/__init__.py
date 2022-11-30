@@ -8,4 +8,3 @@ __version__ = "0.0.1"
 program_name: str = "limax"
 RESOURCES_DIR: Path = Path(__file__).parent / "resources"
 EXAMPLE_LIMAX_PATH: Path = RESOURCES_DIR / "limax_example.csv"
-
