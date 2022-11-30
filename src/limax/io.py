@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 import pandas as pd
+from pymetadata.log import console
 
 
 def read_metadata(str: str) -> None:
@@ -20,8 +21,11 @@ def read_data(str: str) -> None:
     pass
 
 
-def read_limax_csv(limax_csv: Path, line_offset: int = 13) -> pd.DataFrame:
+def read_limax_csv(
+    limax_csv: Path, output_path: Path, line_offset: int = 13
+) -> pd.DataFrame:
     """Read limax data."""
+    console.log(f"Processing '{limax_csv}' -> '{output_path}'")
     with open(limax_csv, "r") as f:
         lines: List[str] = f.readlines()
         # remove empty lines
@@ -48,12 +52,14 @@ def read_limax_csv(limax_csv: Path, line_offset: int = 13) -> pd.DataFrame:
 
     # sort by time (some strange artefacts in some files)
     df.sort_values(by=["time"], inplace=True)
+    df.to_csv(output_path, sep="\t", index=False)
+
     return df
 
 
 if __name__ == "__main__":
-    from limax import EXAMPLE_LIMAX_PATH
+    from limax import EXAMPLE_LIMAX_PATH, EXAMPLE_LIMAX_PROCESSED_PATH
 
-    df = read_limax_csv(EXAMPLE_LIMAX_PATH)
+    df = read_limax_csv(EXAMPLE_LIMAX_PATH, output_path=EXAMPLE_LIMAX_PROCESSED_PATH)
 
     print(df)
