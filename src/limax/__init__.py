@@ -2,7 +2,7 @@
 from pathlib import Path
 
 __author__ = "Matthias Koenig"
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 
 program_name: str = "limax"
