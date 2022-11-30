@@ -21,12 +21,8 @@ limax: python utilities for LiMAx
    :target: http://opensource.org/licenses/LGPL-3.0
    :alt: GNU Lesser General Public License 3
 
-.. image:: https://codecov.io/gh/matthiaskoenig/limax/branch/develop/graph/badge.svg
-   :target: https://codecov.io/gh/matthiaskoenig/limax
-   :alt: Codecov
-
-.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.5308801.svg
-   :target: https://doi.org/10.5281/zenodo.5308801
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.7382670.svg
+   :target: https://doi.org/10.5281/zenodo.7382670
    :alt: Zenodo DOI
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
@@ -57,7 +53,7 @@ How to cite
 ===========
 
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.5308801.svg
-   :target: https://doi.org/10.5281/zenodo.5308801
+   :target: https://doi.org/10.5281/zenodo.7382670
    :alt: Zenodo DOI
 
 Installation
@@ -95,7 +91,7 @@ After installation LiMAx analysis can be performed using the :code:`limax` comma
     ────────────────────────────────────────────────────────────────────────────────
     💉 LIMAX ANALYSIS 💉
     Version 0.1.2 (https://github.com/matthiaskoenig/limax)
-    Citation https://doi.org/10.5281/zenodo.3708271
+    Citation https://doi.org/10.5281/zenodo.7382670
     ────────────────────────────────────────────────────────────────────────────────
     Example (single file):
         limax -i patient1.csv -o limax_example_processed.csv
