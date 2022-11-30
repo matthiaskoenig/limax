@@ -1,8 +1,4 @@
-"""Definition of command line commands.
-
-Upload study or studies, delete studies and upload available info nodes.
-This commands are available after installation.
-"""
+"""Definition of command line commands for limax."""
 import argparse
 from pathlib import Path
 
@@ -21,8 +17,11 @@ def main() -> None:
 
     The script is registered as `limax` command.
 
-    Example:
-        limax --i src/limax/resources/limax_example.csv --o src/limax/resources/limax_example_processed.csv
+    Example (process single file):
+        limax -i src/limax/resources/patient1.csv -o src/limax/resources/limax_example_processed.csv
+
+    Example (process all limax file in folder):
+        limax --input_dir src/limax/resources --output_dir src/limax/resources
     """
 
     import optparse
@@ -34,20 +33,37 @@ def main() -> None:
         "--input",
         action="store",
         dest="input_path",
-        help="Path to LiMAx raw file.",
+        help="Path to input LiMAx raw file.",
     )
     parser.add_option(
         "-o",
         "--output",
         action="store",
         dest="output_path",
-        help="Path to processed LiMAx file (without patient data) as '*.csv'.",
+        help="Path to output processed LiMAx file (without patient data) as '*.csv'.",
+    )
+    parser.add_option(
+        "--input_dir",
+        action="store",
+        dest="input_dir_path",
+        help="Path to input folder with LiMAx raw files as '*.csv'.",
+    )
+    parser.add_option(
+        "--output_dir",
+        action="store",
+        dest="output_dir_path",
+        help="Path to output folder with processed LiMAx files",
     )
 
     console.rule(style="white")
     console.print(":syringe: LIMAX ANALYSIS :syringe:")
     console.print(f"Version {__version__} (https://github.com/matthiaskoenig/limax)")
     console.print(f"Citation {__citation__}")
+    console.rule(style="white")
+    console.print("Example (single file):")
+    console.print("    limax -i patient1.csv -o limax_example_processed.csv")
+    console.print("Example (folder):")
+    console.print("    limax --input_dir limax_examples --output_dir limax_examples_processed")
     console.rule(style="white")
 
     options, args = parser.parse_args()
@@ -58,26 +74,42 @@ def main() -> None:
         console.rule(style="white")
         sys.exit(1)
 
-    if not options.input_path:
-        _parser_message("Required argument '--input' missing")
-    if not options.output_path:
-        _parser_message("Required argument '--output' missing")
+    if not options.input_path and not options.input_dir_path:
+        _parser_message("Required argument '--input' or '--input_dir' missing")
+    if not options.output_path and not options.output_dir_path:
+        _parser_message("Required argument '--output' or '--output_dir' missing")
+    if options.input_path and not options.output_path:
+        _parser_message("If '--input' is provided '--output' is required")
+    if options.input_dir_path and not options.output_dir_path:
+        _parser_message("If '--input_dir' is provided '--output_dir' is required")
 
-    input_path = Path(options.input_path)
-    if not input_path.exists():
-        _parser_message(
-            f"--input '{options.input_path}' does not exist, ensure valid LiMAx raw "
-            f"file."
-        )
+    # process single LiMAx
+    if options.input_path and options.output_path:
+        input_path = Path(options.input_path)
+        output_path = Path(options.output_path)
+        if not input_path.exists():
+            _parser_message(f"'--input {input_path}' does not exist.")
+        if not input_path.is_file():
+            _parser_message(f"'--input {input_path}' is not a file.")
+        read_limax_csv(limax_csv=input_path, output_path=output_path)
 
-    output_path = Path(options.output_path)
-    if not str(output_path).endswith(".csv"):
-        _parser_message(
-            f"--output '{options.input_path}' output path must end in '.csv'"
-        )
+    # process folder with LiMAx raw data
+    elif options.input_dir_path and options.output_dir_path:
+        input_dir_path = Path(options.input_dir_path)
+        output_dir_path = Path(options.output_dir_path)
+        if not input_dir_path.exists():
+            _parser_message(f"'--input {input_dir_path}' does not exist.")
+        if not input_dir_path.is_dir():
+            _parser_message(f"'--input {input_dir_path}' is not a directory.")
 
-    read_limax_csv(limax_csv=input_path, output_path=output_path)
+        # process all files
+        for limax_csv in input_dir_path.glob("**/*.csv"):
+            limax_csv_rel = limax_csv.relative_to(input_dir_path)
+            output_path: Path = Path(output_dir_path / limax_csv_rel)
+            print(output_path)
+            read_limax_csv(limax_csv=limax_csv, output_path=output_path)
 
 
 if __name__ == "__main__":
     main()
+

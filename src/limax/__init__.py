@@ -7,6 +7,8 @@ __citation__ = "https://doi.org/10.5281/zenodo.3708271"
 
 
 program_name: str = "limax"
+
 RESOURCES_DIR: Path = Path(__file__).parent / "resources"
-EXAMPLE_LIMAX_PATH: Path = RESOURCES_DIR / "limax_example.csv"
-EXAMPLE_LIMAX_PROCESSED_PATH: Path = RESOURCES_DIR / "limax_example_processed.csv"
+RAW_DIR: Path = RESOURCES_DIR / "raw"
+PROCESSED_DIR: Path = RESOURCES_DIR / "processed"
+EXAMPLE_LIMAX_PATH: Path = RAW_DIR / "patient1.csv"

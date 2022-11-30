@@ -68,7 +68,11 @@ can be installed via::
     pip install limax
 
 Best practise is to setup a virtual environment example via conda and install the package.
-First install anaconda via https://docs.anaconda.com/anaconda/install/index.html::
+First install anaconda via https://docs.anaconda.com/anaconda/install/index.html.
+To run the limax tool open a terminal app (e.g. Application -> Utilities -> terminal on MacOS) 
+and create the conda environment 
+
+::
 
     conda create -n limax python=3.10
     conda activate limax
@@ -104,6 +108,24 @@ After installation LiMAx analysis can be performed using the :code:`limax` comma
                             Path to processed LiMAx file (without patient data) as
                             '*.csv'.
     ────────────────────────────────────────────────────────────────────────────────
+
+
+Common problems
+===============
+On MacOs the terminal app requires permissions to access files, i.e.
+
+.. code:: bash
+
+    PermissionError: [Errno 1] Operation not permitted
+
+This can be solved by changing the permissions of the terminal app via https://stackoverflow.com/questions/58479686/permissionerror-errno-1-operation-not-permitted-after-macos-catalina-update:
+
+* Go to System Preference->Security and Privacy.
+* On the left side click on Full Disk Access
+* Now click on bottom left lock icon and enter password to make changes, see Label 3
+* Now click on + sign button
+* Browse the terminal app from Application -> Utilities
+
 
 License
 =======

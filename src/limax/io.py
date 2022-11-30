@@ -21,6 +21,14 @@ def read_data(str: str) -> None:
     pass
 
 
+def read_limax_dir(input_dir: Path, output_dir: Path) -> None:
+    """Read limax data from folder."""
+    # process all files
+    for limax_csv in input_dir.glob("**/*.csv"):
+        limax_csv_rel = limax_csv.relative_to(input_dir)
+        output_path: Path = Path(output_dir / limax_csv_rel)
+        read_limax_csv(limax_csv=limax_csv, output_path=output_path)
+
 def read_limax_csv(
     limax_csv: Path, output_path: Path, line_offset: int = 13
 ) -> pd.DataFrame:
@@ -58,8 +66,12 @@ def read_limax_csv(
 
 
 if __name__ == "__main__":
-    from limax import EXAMPLE_LIMAX_PATH, EXAMPLE_LIMAX_PROCESSED_PATH
+    from limax import EXAMPLE_LIMAX_PATH, RAW_DIR, PROCESSED_DIR
 
-    df = read_limax_csv(EXAMPLE_LIMAX_PATH, output_path=EXAMPLE_LIMAX_PROCESSED_PATH)
-
+    df = read_limax_csv(
+        limax_csv=EXAMPLE_LIMAX_PATH,
+        output_path=PROCESSED_DIR / EXAMPLE_LIMAX_PATH.stem
+    )
     print(df)
+
+    read_limax_dir(input_dir=RAW_DIR, output_dir=PROCESSED_DIR)

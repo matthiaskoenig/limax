@@ -13,7 +13,7 @@ from limax import EXAMPLE_LIMAX_PATH, commands
 def test_limax_1(monkeypatch: Any, tmp_path: Path, filename: str) -> None:
     """Test command.
 
-    limax --input src/resources/limax_example.csv
+    limax --input src/resources/patient1.csv
     --output src/resources/limax_example_processed.csv
     """
     output_path = tmp_path / "processed.csv"
