@@ -1,8 +1,9 @@
 """Test LiMAx IO functionality."""
+import json
 from pathlib import Path
 
 from limax import EXAMPLE_LIMAX_PATH
-from limax.io import read_limax_file
+from limax.io import LX, read_limax_file
 
 
 def test_convert_limax_io(tmp_path: Path) -> None:
@@ -18,4 +19,11 @@ def test_convert_limax_io(tmp_path: Path) -> None:
 
 def test_json_serialization(tmp_path: Path) -> None:
     """Test roundtrip to JSON."""
-    lx = read_limax_file(limax_csv=EXAMPLE_LIMAX_PATH, output_dir=output_path)
+    lx = read_limax_file(limax_csv=EXAMPLE_LIMAX_PATH, output_dir=tmp_path)
+    assert lx
+    output_path = tmp_path / f"{EXAMPLE_LIMAX_PATH.stem}.json"
+    assert output_path.exists()
+    with open(output_path, "r") as f_json:
+        json_data = json.load(f_json)
+        lx2 = LX(**json_data)
+        assert lx2

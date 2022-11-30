@@ -4,9 +4,10 @@ Reading data from RAW Limax files.
 Anonymization.
 """
 
+import json
 from pathlib import Path
 from typing import Any, Dict, List
-import json
+
 import pandas as pd
 from pydantic import BaseModel, Field
 
@@ -157,20 +158,19 @@ def read_limax_file(limax_csv: Path, output_dir: Path, line_offset: int = 13) ->
     }
     df = pd.DataFrame(data=d)
     df = df[["time", "dob", "error"]]
-    # make columns numeric
-    # df = pd.to_numeric(df)
-    # print(df.head())
 
     # sort by time (some strange artefacts in some files)
     df.sort_values(by=["time"], inplace=True)
     lx_data = LXData(
         time=list(df.time.values), dob=list(df.dob.values), error=list(df.error.values)
     )
+    lx = LX(metadata=lx_metadata, data=lx_data)
+
     # serialization to JSON
-    with open(output_dir, "w") as f_json:
+    with open(output_path, "w") as f_json:
         f_json.write(lx.json(indent=2))
 
-    return LX(metadata=lx_metadata, data=lx_data)
+    return lx
 
 
 if __name__ == "__main__":

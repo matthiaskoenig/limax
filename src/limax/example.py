@@ -5,7 +5,7 @@ from limax.io import read_limax_dir, read_limax_file
 
 def example_limax_file() -> None:
     """Run processing of single file."""
-    read_limax_file(EXAMPLE_LIMAX_PATH, PROCESSED_DIR / EXAMPLE_LIMAX_PATH.name)
+    read_limax_file(EXAMPLE_LIMAX_PATH, PROCESSED_DIR)
 
 
 def example_limax_dir() -> None:

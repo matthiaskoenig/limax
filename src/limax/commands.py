@@ -55,9 +55,7 @@ def main() -> None:
     console.print("Example single file:")
     console.print("    limax -i patient1.csv -o .")
     console.print("Example folder:")
-    console.print(
-        "    limax --input_dir limax_examples --o limax_examples_processed"
-    )
+    console.print("    limax --input_dir limax_examples --o limax_examples_processed")
     console.rule(style="white")
 
     options, args = parser.parse_args()
