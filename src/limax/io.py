@@ -4,13 +4,15 @@ Reading data from RAW Limax files.
 Anonymization.
 """
 
-from pydantic import BaseModel, Field
 from pathlib import Path
 from typing import Any, Dict, List
-
+import json
 import pandas as pd
-from limax.console import console
+from pydantic import BaseModel, Field
+
 from limax import log
+from limax.console import console
+
 
 logger = log.get_logger(__file__)
 
@@ -76,6 +78,7 @@ class LX(BaseModel):
 
     class Config:
         """Config for DOB curve."""
+
         arbitrary_types_allowed = True
 
 
@@ -85,13 +88,13 @@ def read_limax_dir(input_dir: Path, output_dir: Path) -> None:
     for limax_csv in input_dir.glob("**/*.csv"):
         limax_csv_rel = limax_csv.relative_to(input_dir)
         output_path: Path = Path(output_dir / limax_csv_rel)
-        read_limax_file(limax_csv=limax_csv, output_path=output_path)
+        read_limax_file(limax_csv=limax_csv, output_dir=output_path.parent)
 
 
-def read_limax_file(
-    limax_csv: Path, output_path: Path, line_offset: int = 13
-) -> LX:
+def read_limax_file(limax_csv: Path, output_dir: Path, line_offset: int = 13) -> LX:
     """Read limax data."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{limax_csv.stem}.json"
     console.log(f"Processing '{limax_csv}' -> '{output_path}'")
     with open(limax_csv, "r") as f:
         lines: List[str] = f.readlines()
@@ -125,7 +128,7 @@ def read_limax_file(
             "smoking": tokens[1].split(":")[1].strip(),
             "oxygen": tokens[2].split(":")[1].strip(),
             "ventilation": tokens[3].split(":")[1].strip(),
-            "medication":  tokens[4].split(":")[1].strip(),
+            "medication": tokens[4].split(":")[1].strip(),
         }
         for key in ["smoking", "oxygen", "ventilation", "medication"]:
             if metadata_dict[key].lower() == "ja":
@@ -133,7 +136,9 @@ def read_limax_file(
             elif metadata_dict[key].lower() == "nein":
                 metadata_dict[key] = False
             else:
-                logger.error(f"Invalid value in metadata: '{key}: {metadata_dict[key]}'")
+                logger.error(
+                    f"Invalid value in metadata: '{key}: {metadata_dict[key]}'"
+                )
                 metadata_dict[key] = True
 
         lx_metadata: LXMetaData = LXMetaData(**metadata_dict)
@@ -158,8 +163,12 @@ def read_limax_file(
 
     # sort by time (some strange artefacts in some files)
     df.sort_values(by=["time"], inplace=True)
-    lx_data = LXData(time=list(df.time.values), dob=list(df.dob.values), error=list(df.error.values))
-    # df.to_csv(output_path, sep="\t", index=False)
+    lx_data = LXData(
+        time=list(df.time.values), dob=list(df.dob.values), error=list(df.error.values)
+    )
+    # serialization to JSON
+    with open(output_dir, "w") as f_json:
+        f_json.write(lx.json(indent=2))
 
     return LX(metadata=lx_metadata, data=lx_data)
 
@@ -169,7 +178,7 @@ if __name__ == "__main__":
 
     lx = read_limax_file(
         limax_csv=EXAMPLE_LIMAX_PATH,
-        output_path=PROCESSED_DIR / EXAMPLE_LIMAX_PATH.name,
+        output_dir=PROCESSED_DIR / EXAMPLE_LIMAX_PATH.name,
     )
     console.print(lx)
     console.print(lx.json())
