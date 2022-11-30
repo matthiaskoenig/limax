@@ -1,4 +1,4 @@
-.. image:: ./docs/images/favicon/limax-100x100-300dpi.png
+.. image:: https://github.com/matthiaskoenig/limax/raw/develop/docs/images/favicon/limax-100x100-300dpi.png
    :align: left
    :alt: limax logo
 
@@ -39,15 +39,12 @@ LiMAx data with source code available from
 
 Features include among others
 
-- Visualization of LiMAx raw data
 - Anonymisation of LiMAx raw data files
-- Calculation of AUC and DOB values
- 
-If you have any questions or issues please `open an issue <https://github.com/matthiaskoenig/limax/issues>`__.
+- Visualization of LiMAx raw data
+- Calculation of AUC and DOB values 
 
-Documentation
-=============
-Documentation is still work in progress.
+
+If you have any questions or issues please `open an issue <https://github.com/matthiaskoenig/limax/issues>`__.
 
 How to cite
 ===========
