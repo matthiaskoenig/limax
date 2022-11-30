@@ -1,10 +1,13 @@
 """
 Helper script to convert LiMAx.
 """
+from pathlib import Path
+from typing import List
+
 import pandas as pd
 
 
-def convert_limax_csv(path_in, path_out, format="csv"):
+def convert_limax_csv(path_in, path_out):
     with open(path_in, "r") as f:
         lines = f.readlines()
         # remove empty lines
@@ -37,11 +40,5 @@ def convert_limax_csv(path_in, path_out, format="csv"):
 
 
 if __name__ == "__main__":
-
-    paths = ["./testdata/OS_31_091_01_Bikarbonat.csv", "./testdata/OS_31_091_01_Routine.csv"]
-
-    for path_in in paths:
-        path_out = path_in[:-4] + "_data.csv"
-        convert_limax_csv(path_in)
-
-
+    from limax import RESOURCES_DIR, EXAMPLE_LIMAX_PATH
+        convert_limax_csv(EXAMPLE_LIMAX_PATH)
