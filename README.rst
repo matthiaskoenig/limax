@@ -67,7 +67,8 @@ can be installed via::
 
     pip install limax
 
-Best practise is to setup a virtual environment example via conda and install the package::
+Best practise is to setup a virtual environment example via conda and install the package.
+First install anaconda via https://docs.anaconda.com/anaconda/install/index.html::
 
     conda create -n limax python=3.10
     conda activate limax
