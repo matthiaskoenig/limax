@@ -2,7 +2,7 @@
 from pathlib import Path
 
 __author__ = "Matthias Koenig"
-__version__ = "0.1.4"
+__version__ = "0.2.0"
 __citation__ = "https://doi.org/10.5281/zenodo.7382670"
 
 
