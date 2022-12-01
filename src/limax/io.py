@@ -4,83 +4,17 @@ Reading data from RAW Limax files.
 Anonymization.
 """
 
-import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
-from pydantic import BaseModel, Field
 
 from limax import log
 from limax.console import console
-
+from limax.model import LXMetaData, LXData, LX
+from limax.plot import plot_lx_matplotlib
 
 logger = log.get_logger(__file__)
-
-
-class LXMetaData(BaseModel):
-    """LiMAx metadata.
-
-    0 # mID 102
-    1 # 'doc' (, )
-    2 # Dr. Max Mustermann
-    3 # 01.01.2010 08:30
-    4 # utouARg
-    5 # 160 cm
-    6 # 70 kg
-    7 # 43,295187
-    8 # 44,395187
-    9 # 630,0
-    10 # Nahrungskarenz: über 3 Std., Raucher: Nein, Sauerstoff: Nein, Beatmung: Nein, Medikation: Ja
-    """
-
-    mid: str
-    # name: str
-    datetime: str
-    height: float = Field(description="Height in [cm]")
-    weight: float = Field(description="Weight in [kg]")
-    smoking: bool = Field(description="Smoking status")
-    oxygen: bool
-    ventilation: bool
-    medication: bool
-    food_abstinence: str
-
-
-class LXData(BaseModel):
-    """LiMAx data."""
-
-    time: List[float]
-    dob: List[float]
-    error: List[str]
-
-    def to_df(self) -> pd.DataFrame:
-        """Get pandas DataFrame representation."""
-        d: Dict[str, Any] = {
-            "time": self.time,
-            "dob": self.dob,
-            "error": self.error,
-        }
-        df = pd.DataFrame(d)
-        df = df[["time", "dob", "error"]]
-        # make columns numeric
-        # df = pd.to_numeric(df)
-        # print(df.head())
-
-        # sort by time (some strange artefacts in some files)
-        df.sort_values(by=["time"], inplace=True)
-        return df
-
-
-class LX(BaseModel):
-    """LiMAx DOB curve."""
-
-    metadata: LXMetaData
-    data: LXData = Field(repr=False)
-
-    class Config:
-        """Config for DOB curve."""
-
-        arbitrary_types_allowed = True
 
 
 def read_limax_dir(input_dir: Path, output_dir: Path) -> None:
@@ -92,11 +26,16 @@ def read_limax_dir(input_dir: Path, output_dir: Path) -> None:
         read_limax_file(limax_csv=limax_csv, output_dir=output_path.parent)
 
 
-def read_limax_file(limax_csv: Path, output_dir: Path, line_offset: int = 13) -> LX:
+def read_limax_file(
+    limax_csv: Path, output_dir: Optional[Path] = None, line_offset: int = 13
+) -> LX:
     """Read limax data."""
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_path = output_dir / f"{limax_csv.stem}.json"
-    console.log(f"Processing '{limax_csv}' -> '{output_path}'")
+    if output_dir:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        output_path = output_dir / f"{limax_csv.stem}.json"
+        fig_path = output_dir / f"{limax_csv.stem}.png"
+        console.log(f"Processing '{limax_csv}' -> '{output_path}'")
+
     with open(limax_csv, "r") as f:
         lines: List[str] = f.readlines()
         # remove empty lines
@@ -167,18 +106,19 @@ def read_limax_file(limax_csv: Path, output_dir: Path, line_offset: int = 13) ->
     lx = LX(metadata=lx_metadata, data=lx_data)
 
     # serialization to JSON
-    with open(output_path, "w") as f_json:
-        f_json.write(lx.json(indent=2))
+    if output_dir:
+        with open(output_path, "w") as f_json:
+            f_json.write(lx.json(indent=2))
+        plot_lx_matplotlib(lx, fig_path=fig_path)
 
     return lx
 
 
 if __name__ == "__main__":
-    from limax import EXAMPLE_LIMAX_PATH, PROCESSED_DIR, RAW_DIR
+    from limax import EXAMPLE_LIMAX_PATH, PROCESSED_DIR
 
     lx = read_limax_file(
-        limax_csv=EXAMPLE_LIMAX_PATH,
-        output_dir=PROCESSED_DIR / EXAMPLE_LIMAX_PATH.name,
+        limax_csv=EXAMPLE_LIMAX_PATH, output_dir=PROCESSED_DIR
     )
     console.print(lx)
     console.print(lx.json())

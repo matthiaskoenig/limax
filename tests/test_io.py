@@ -3,7 +3,8 @@ import json
 from pathlib import Path
 
 from limax import EXAMPLE_LIMAX_PATH
-from limax.io import LX, read_limax_file
+from limax.io import read_limax_file
+from limax.model import LX
 
 
 def test_convert_limax_io(tmp_path: Path) -> None:
