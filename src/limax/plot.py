@@ -25,7 +25,7 @@ matplotlib.rc("figure", titlesize=BIGGER_SIZE)  # fontsize of the figure title
 # ------------------------------------------------------------------------------
 
 
-def plot_lx_matplotlib(lx: LX, fig_path: Optional[Path] = None):
+def plot_lx_matplotlib(lx: LX, fig_path: Optional[Path] = None) -> None:
     """Plot DOB curve using matplotlib."""
     ax1: Axes
     ax2: Axes

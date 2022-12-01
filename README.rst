@@ -87,28 +87,25 @@ After installation LiMAx analysis can be performed using the :code:`limax` comma
     
     ────────────────────────────────────────────────────────────────────────────────
     💉 LIMAX ANALYSIS 💉
-    Version 0.1.4 (https://github.com/matthiaskoenig/limax)
+    Version 0.2.0 (https://github.com/matthiaskoenig/limax)
     Citation https://doi.org/10.5281/zenodo.7382670
     ────────────────────────────────────────────────────────────────────────────────
-    Example (single file):
-        limax -i patient1.csv -o limax_example_processed.csv
-    Example (folder):
-        limax --input_dir limax_examples --output_dir limax_examples_processed
+    Example processing single LiMAx raw file:
+        limax -i patient1.csv -o .
+    Example processing folder with LiMAx raw files:
+        limax -i limax_examples -o limax_examples_processed
     ────────────────────────────────────────────────────────────────────────────────
-    Required argument '--input' or '--input_dir' missing
-    Usage: limax [options]
+    Required argument '--input' missing.
+    Usage: commands.py [options]
     
     Options:
       -h, --help            show this help message and exit
       -i INPUT_PATH, --input=INPUT_PATH
-                            Path to input LiMAx raw file.
-      -o OUTPUT_PATH, --output=OUTPUT_PATH
-                            Path to output processed LiMAx file (without patient
-                            data) as '*.csv'.
-      --input_dir=INPUT_DIR_PATH
-                            Path to input folder with LiMAx raw files as '*.csv'.
-      --output_dir=OUTPUT_DIR_PATH
-                            Path to output folder with processed LiMAx files
+                            Path to folder with LiMAx raw files or single LiMAx
+                            raw file as '*.csv'.
+      -o OUTPUT_DIR, --output_dir=OUTPUT_DIR
+                            Path to output folder with processed LiMAx files as
+                            '*.json'.
     ────────────────────────────────────────────────────────────────────────────────
 
 

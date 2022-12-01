@@ -1,3 +1,5 @@
+"""Models for LiMAx data."""
+
 from typing import Any, Dict, List
 
 import pandas as pd
