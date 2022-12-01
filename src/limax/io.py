@@ -11,8 +11,9 @@ import pandas as pd
 
 from limax import log
 from limax.console import console
-from limax.model import LXMetaData, LXData, LX
+from limax.model import LX, LXData, LXMetaData
 from limax.plot import plot_lx_matplotlib
+
 
 logger = log.get_logger(__file__)
 
@@ -117,9 +118,7 @@ def read_limax_file(
 if __name__ == "__main__":
     from limax import EXAMPLE_LIMAX_PATH, PROCESSED_DIR
 
-    lx = read_limax_file(
-        limax_csv=EXAMPLE_LIMAX_PATH, output_dir=PROCESSED_DIR
-    )
+    lx = read_limax_file(limax_csv=EXAMPLE_LIMAX_PATH, output_dir=PROCESSED_DIR)
     console.print(lx)
     console.print(lx.json())
     console.print(lx.data.to_df())

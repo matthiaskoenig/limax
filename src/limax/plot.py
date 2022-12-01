@@ -9,6 +9,7 @@ from matplotlib.figure import Figure
 
 from limax.model import LX
 
+
 # ------------------------------------------------------------------------------
 SMALL_SIZE = 12
 MEDIUM_SIZE = 15
