@@ -37,12 +37,15 @@ limax is a collection of python utilities for working with
 LiMAx data with source code available from 
 `https://github.com/matthiaskoenig/limax <https://github.com/matthiaskoenig/limax>`__.
 
-Features include among others
+The project is developed in collaboration by the Humboldt-University Berlin 
+(`Matthias König <https://livermetabolism.com>`__)
+and the Jena University Hospital (`Hans-Michael Tautenhahn <https://www.uniklinikum-jena.de/avc/Team.html>`__).
+
+Features include:
 
 - Anonymisation of LiMAx raw data files
-- Visualization of LiMAx raw data
-- Calculation of AUC and DOB values 
-
+- Visualization of LiMAx DOB curves
+- Calculation of AUC, LiMAx values and other pharmacokinetics parameters from LiMAx DOB curves. 
 
 If you have any questions or issues please `open an issue <https://github.com/matthiaskoenig/limax/issues>`__.
 
