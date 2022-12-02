@@ -168,4 +168,4 @@ To install for development use::
     pip install -e .[development]
 
 
-© 2022 Matthias König
+© 2022 Matthias König & Hans-Michael Tautenhahn
