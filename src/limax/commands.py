@@ -4,7 +4,7 @@ from pathlib import Path
 
 from limax import __citation__, __version__, log
 from limax.console import console
-from limax.io import read_limax_dir, read_limax_file
+from limax.io import parse_limax_file, read_limax_dir
 
 
 logger = log.get_logger(__name__)
@@ -73,7 +73,7 @@ def main() -> None:
 
     # process single LiMAx
     if input_path.is_file():
-        read_limax_file(limax_csv=input_path, output_dir=output_dir)
+        parse_limax_file(limax_csv=input_path, output_dir=output_dir)
 
     # process folder with LiMAx raw data
     elif input_path.is_dir():

@@ -48,9 +48,9 @@ def plot_lx_matplotlib(lx: LX, fig_path: Optional[Path] = None) -> None:
 
 
 if __name__ == "__main__":
-    from limax import EXAMPLE_LIMAX_PATH
-    from limax.io import read_limax_file
+    from limax import EXAMPLE_LIMAX_PATIENT1_PATH
+    from limax.io import parse_limax_file
 
-    lx: LX = read_limax_file(EXAMPLE_LIMAX_PATH)
+    lx: LX = parse_limax_file(EXAMPLE_LIMAX_PATIENT1_PATH)
     print(lx.to_df())
     plot_lx_matplotlib(lx)

@@ -23,10 +23,10 @@ class LXMetaData(BaseModel):
     """
 
     mid: str
-    # name: str
     datetime: str
     height: float = Field(description="Height in [cm]")
     weight: float = Field(description="Weight in [kg]")
+    sex: str = Field(description="Sex in {M, F, NA}")
     smoking: bool = Field(description="Smoking status")
     oxygen: bool
     ventilation: bool

@@ -6,10 +6,10 @@ from typing import Any
 
 import pytest
 
-from limax import EXAMPLE_LIMAX_PATH, commands
+from limax import EXAMPLE_LIMAX_PATIENT1_PATH, commands
 
 
-@pytest.mark.parametrize("filename", [EXAMPLE_LIMAX_PATH])
+@pytest.mark.parametrize("filename", [EXAMPLE_LIMAX_PATIENT1_PATH])
 def test_limax_1(monkeypatch: Any, tmp_path: Path, filename: str) -> None:
     """Test command.
 
