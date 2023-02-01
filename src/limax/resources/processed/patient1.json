@@ -1,7 +1,7 @@
 {
   "metadata": {
     "mid": "102",
-    "datetime": "01.01.2010 08:30",
+    "datetime": "2010-01-01 08:30",
     "height": 160.0,
     "weight": 70.0,
     "sex": "NA",
@@ -9,7 +9,9 @@
     "oxygen": false,
     "ventilation": false,
     "medication": true,
-    "food_abstinence": "\u00fcber 3 Std."
+    "food_abstinence": "> 3 hr",
+    "value1": 43.295187,
+    "value2": 44.395187
   },
   "data": {
     "time": [

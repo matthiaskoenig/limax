@@ -1,7 +1,7 @@
 {
   "metadata": {
     "mid": "102",
-    "datetime": "31.01.2022 16:21",
+    "datetime": "2022-01-31 16:21",
     "height": 150.0,
     "weight": 60.0,
     "sex": "NA",
@@ -9,7 +9,9 @@
     "oxygen": false,
     "ventilation": false,
     "medication": false,
-    "food_abstinence": "\u00fcber 3 Std."
+    "food_abstinence": "> 3 hr",
+    "value1": 43.295187,
+    "value2": 44.395187
   },
   "data": {
     "time": [

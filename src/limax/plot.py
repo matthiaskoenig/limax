@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 import matplotlib
+import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
@@ -33,14 +34,29 @@ def plot_lx_matplotlib(lx: LX, fig_path: Optional[Path] = None) -> None:
     f, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
     f.subplots_adjust(hspace=0.3)
 
-    f.suptitle(f"mID: {lx.metadata.mid}")
+    f.suptitle(
+        f"mID: {lx.metadata.mid}",
+        fontdict={
+            "size": 12,
+        },
+    )
+    ax1.set_title(
+        str(lx.metadata),
+        fontdict={
+            "family": "monospace",
+            "size": 10,
+        },
+    )
+
     for ax in (ax1, ax2):
-        ax.plot(lx.data.time, lx.data.dob, "-o", color="black")
+        ax.plot(np.array(lx.data.time) / 60, lx.data.dob, "-o", color="black")
         ax.grid(True)
-        ax.set_xlabel("Time [s]", fontdict={"weight": "bold"})
+        ax.set_xlabel("Time [min]", fontdict={"weight": "bold"})
     ax1.set_ylabel("DOB", fontdict={"weight": "bold"})
     ax2.set_yscale("log")
     ax2.set_ylim(bottom=1.0)
+
+    # add information to plot
 
     plt.show()
     if fig_path:

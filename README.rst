@@ -90,7 +90,7 @@ After installation LiMAx analysis can be performed using the :code:`limax` comma
     
     ────────────────────────────────────────────────────────────────────────────────
     💉 LIMAX ANALYSIS 💉
-    Version 0.2.2 (https://github.com/matthiaskoenig/limax)
+    Version 0.2.4 (https://github.com/matthiaskoenig/limax)
     Citation https://doi.org/10.5281/zenodo.7382669
     ────────────────────────────────────────────────────────────────────────────────
     Example processing single LiMAx raw file:
@@ -171,4 +171,4 @@ To install for development use::
     pip install -e .[development]
 
 
-© 2022 Matthias König & Hans-Michael Tautenhahn
+© 2022-2023 Matthias König, Eva Kindler & Hans-Michael Tautenhahn
