@@ -28,39 +28,67 @@ matplotlib.rc("figure", titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 def plot_lx_matplotlib(lx: LX, fig_path: Optional[Path] = None) -> None:
     """Plot DOB curve using matplotlib."""
+    metadata = lx.metadata
     ax1: Axes
     ax2: Axes
     f: Figure
-    f, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
+    f, (ax1, ax2, ax3) = plt.subplots(nrows=1, ncols=3, figsize=(15, 5))
     f.subplots_adjust(hspace=0.3)
 
     f.suptitle(
-        f"mID: {lx.metadata.mid}",
+        f"mid: {lx.metadata.mid}",
         fontdict={
-            "size": 12,
-        },
-    )
-    ax1.set_title(
-        str(lx.metadata),
-        fontdict={
-            "family": "monospace",
-            "size": 10,
+            "size": 11,
         },
     )
 
-    for ax in (ax1, ax2):
+    sex_text = "∅ (NA)"
+    if metadata.sex == "M":
+        sex_text = "♂ (M)"
+    elif metadata.sex == "F":
+        sex_text = "♀ (F)"
+    text = "\n".join(
+        [
+            f"{'mid':<16}: {metadata.mid}",
+            f"{'datetime':<16}: {metadata.datetime}",
+            f"{'height':<16}: {metadata.height}",
+            f"{'weight':<16}: {metadata.weight}",
+            f"{'sex':<16}: {sex_text}",
+            f"{'smoking':<16}: {'✓ (Yes)' if metadata.smoking else 'x (No)'}",
+            f"{'oxygen':<16}: {'✓ (Yes)' if metadata.oxygen else 'x (No)'}",
+            f"{'ventilation':<16}: {'✓ (Yes)' if metadata.ventilation else 'x (No)'}",
+            f"{'medication':<16}: {'✓ (Yes)' if metadata.medication else 'x (No)'}",
+            f"{'food abstinence':<16}: {metadata.food_abstinence}",
+        ]
+    )
+    ax1.annotate(
+        text,
+        xy=(0.05, 0.4),
+        xycoords="figure fraction",
+        family="monospace",
+        size=14,
+    )
+
+    for ax in (ax2, ax3):
         ax.plot(np.array(lx.data.time) / 60, lx.data.dob, "-o", color="black")
         ax.grid(True)
-        ax.set_xlabel("Time [min]", fontdict={"weight": "bold"})
-    ax1.set_ylabel("DOB", fontdict={"weight": "bold"})
-    ax2.set_yscale("log")
-    ax2.set_ylim(bottom=1.0)
 
-    # add information to plot
+        ax.set_xlabel("Time [min]", fontdict={"weight": "bold"})
+
+    ax1.get_xaxis().set_visible(False)
+    ax1.get_yaxis().set_visible(False)
+    ax1.spines["top"].set_visible(False)
+    ax1.spines["right"].set_visible(False)
+    ax1.spines["bottom"].set_visible(False)
+    ax1.spines["left"].set_visible(False)
+
+    ax2.set_ylabel("DOB", fontdict={"weight": "bold"})
+    ax3.set_yscale("log")
+    ax3.set_ylim(bottom=1.0)
 
     plt.show()
     if fig_path:
-        f.savefig(fig_path)
+        f.savefig(fig_path, dpi=300, bbox_inches="tight")
 
 
 if __name__ == "__main__":

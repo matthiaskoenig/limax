@@ -3,11 +3,12 @@ Reading data from RAW Limax files.
 
 Anonymization.
 """
-
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
+import numpy as np
 import pandas as pd
 
 from limax import log
@@ -22,10 +23,20 @@ logger = log.get_logger(__file__)
 def read_limax_dir(input_dir: Path, output_dir: Path) -> None:
     """Read limax data from folder."""
     # process all files
+    lx_metadata = []
     for limax_csv in input_dir.glob("**/*.csv"):
         limax_csv_rel = limax_csv.relative_to(input_dir)
         output_path: Path = Path(output_dir / limax_csv_rel)
-        parse_limax_file(limax_csv=limax_csv, output_dir=output_path.parent)
+        lx: LX = parse_limax_file(limax_csv=limax_csv, output_dir=output_path.parent)
+        lx_metadata.append(lx.metadata.dict())
+
+    # create overall report
+    df = pd.DataFrame(data=lx_metadata)
+    df.to_csv(output_dir / "report.tsv", sep="\t", index=False)
+    df_clean = df.drop(["comments"], axis=1)
+    console.rule(style="[white]")
+    console.log(df_clean)
+    console.rule(style="[white]")
 
 
 class MetadataParser:
@@ -38,6 +49,63 @@ class MetadataParser:
         "ventilation",
         "medication",
     ]
+
+    pattern_datetime = re.compile(r"\d{2}\.\d{2}\.\d{4}\s\d{2}:\d{2}")
+    pattern_value = re.compile(r"^\d+,{0,1}\d*$")
+
+    @classmethod
+    def parse(cls, md_lines: List[str]) -> LXMetaData:
+        """Parse metadata from metadata lines."""
+
+        # find lines for information
+        line_mid: Optional[str] = None
+        line_datetime: Optional[str] = None
+        line_pmd: Optional[str] = None
+        line_weight: Optional[str] = None
+        line_height: Optional[str] = None
+        line_sex: Optional[str] = None
+        lines_value: List[str] = []
+        lines_comment: List[str] = []  # all lines after 'Nahrungskarenz'
+
+        k_pmd: int = np.iinfo("int16").max
+        for k, line in enumerate(md_lines):
+            if k == 0:
+                line_mid = line
+            elif re.match(pattern=cls.pattern_datetime, string=line):
+                # 01.01.2017 17:17
+                line_datetime = line
+            elif line.startswith("Nahrungskarenz"):
+                line_pmd = line
+                k_pmd = k
+            elif line.endswith(" cm"):
+                line_height = line
+            elif line.endswith(" kg"):
+                line_weight = line
+            elif line == "männlich":
+                line_sex = line
+            elif line == "weiblich":
+                line_sex = line
+            elif re.match(pattern=cls.pattern_value, string=line):
+                lines_value.append(line)
+            elif k > k_pmd:
+                # final comment lines
+                lines_comment.append(line)
+            elif k > 7:
+                # additional lines which were not caught
+                lines_comment.append(line)
+
+        md_dict: Dict[str, Any] = {
+            "mid": cls._parse_mid(line_mid),
+            "datetime": cls._parse_datetime(line_datetime),
+            "sex": cls._parse_sex(line_sex),
+            "height": cls._parse_height_weight(line_height, key="height", unit="cm"),
+            "weight": cls._parse_height_weight(line_weight, key="weight", unit="kg"),
+            "values": cls._parse_values(lines_value),
+            "comments": cls._parse_comments(lines_comment),
+            **cls._parse_patient_metadata(line_pmd),
+        }
+        lx_metadata: LXMetaData = LXMetaData(**md_dict)
+        return lx_metadata
 
     @staticmethod
     def _parse_patient_metadata(
@@ -80,21 +148,30 @@ class MetadataParser:
             return d_processed
 
     @staticmethod
-    def _parse_mid(line: str) -> str:
+    def _parse_mid(line: Optional[str]) -> str:
         """Parse mid."""
-        mid = "-"
-        try:
-            mid = line.split()[1]
-        except (IndexError, ValueError) as err:
-            logger.error(f"'mid' could not be parsed from '{line}'. {err}")
+        mid: str = "-"
+        if not line:
+            logger.error("No 'mid' information in LiMAx metadata")
+            return mid
+
+        if line.startswith("mID "):
+            mid = line[4:]
+        else:
+            mid = line
+
         return mid
 
     @staticmethod
-    def parse_datetime(line: str) -> str:
+    def _parse_datetime(line: Optional[str]) -> str:
         """Parse datetime information.
 
         Example: 01.01.2010 08:30
         """
+        if not line:
+            logger.warning("No 'datetime' information in LiMAx metadata")
+            return "-"
+
         date_str = line
         try:
             # Check that date can be parsed
@@ -109,8 +186,11 @@ class MetadataParser:
         return date_str
 
     @staticmethod
-    def parse_sex(line: str) -> str:
+    def _parse_sex(line: Optional[str]) -> str:
         """Parse sex in {M, F, NA}."""
+        if not line:
+            # no sex information in the file
+            return "NA"
         if line == "männlich":
             return "M"
         elif line == "weiblich":
@@ -120,137 +200,38 @@ class MetadataParser:
             return "NA"
 
     @staticmethod
-    def parse_height(line: str) -> float:
-        """Parse patient height in [cm]."""
-        height: float = -1.0
-        try:
-            tokens = line.split()
-            height = float(tokens[0])
-            if tokens[1] != "cm":
-                logger.error(f"'height' unit is not cm, but '{tokens[1]}'")
-        except (IndexError, ValueError) as err:
-            logger.error(f"'height' could not be parsed from '{line}'. {err}")
-        return height
-
-    @staticmethod
-    def parse_weight(line: str) -> float:
-        """Parse patient weight in [kg]."""
-        height: float = -1.0
-        try:
-            tokens = line.split()
-            height = float(tokens[0])
-            if tokens[1] != "kg":
-                logger.error(f"'weight' unit is not kg, but '{tokens[1]}'")
-        except (IndexError, ValueError) as err:
-            logger.error(f"'weight' could not be parsed from '{line}'. {err}")
-        return height
-
-    @staticmethod
-    def parse_value(line: str) -> float:
-        """Parse value field."""
+    def _parse_height_weight(line: Optional[str], key: str, unit: str) -> float:
+        """Parse patient height or weight."""
         value: float = -1.0
+        if not line:
+            logger.warning(f"No {key} information in LiMAx metadata")
+            return value
+
         try:
-            line = line.replace(",", ".").strip()
-            value = float(line)
+            tokens = line.split()
+            value = float(tokens[0])
+            if tokens[1] != unit:
+                logger.error(f"'{key}' unit is not '{unit}', but '{tokens[1]}'")
         except (IndexError, ValueError) as err:
-            logger.error(f"'value' could not be parsed. {err}")
+            logger.error(f"'{key}' could not be parsed from '{line}'. {err}")
         return value
 
-    @classmethod
-    def parse(cls, md_lines: List[str]) -> LXMetaData:
-        """Parse metadata from metadata lines."""
-        mid = cls._parse_mid(md_lines[0]),
-        datetime = cls.parse_datetime(md_lines[3])
+    @staticmethod
+    def _parse_values(lines: List[str]) -> List[float]:
+        """Parse value fields."""
+        values: List[float] = []
+        for line in lines:
+            try:
+                line = line.replace(",", ".")
+                values.append(float(line))
+            except ValueError as err:
+                logger.warning(f"'value' could not be parsed from '{line}'. {err}")
+        return values
 
-        # max integer
-        k_pmd: int: np.
-        line_pmd: Optional[str] = None
-        line_weight: Optional[str] = None
-        line_height: Optional[str] = None
-        line_sex: Optional[str] = None
-        lines_value: List[str] = []
-        lines_comment: List[str] = []  # all the lines after Nahrungskarenz
-        for k, line in enumerate(md_lines):
-
-
-            if line.startswith("Nahrungskarenz"):
-                line_pmd = line
-            elif line.endswith(" cm"):
-                line_height = line
-            elif line.weight(" cm"):
-                line_height = line
-
-        pmd_dict = cls._parse_patient_metadata(line_pmd)
-
-        md_dict: Dict[str, Any]
-        if len(md_lines) == 11:
-            """
-            Format 1 (length=11):
-
-            # mID 102
-            # 'doc' (, )
-            # Dr. Max Mustermann
-            # 01.01.2010 08:30
-            # utouARg
-            # 160 cm
-            # 70 kg
-            # 43,295187
-            # 44,395187
-            # 630,0
-            # Nahrungskarenz: über 3 Std., Raucher: Nein, Sauerstoff: Nein, Beatmung: Nein, Medikation: Ja
-            """
-            md_dict = {
-                "mid": cls._parse_mid(md_lines[0]),
-                "datetime": cls.parse_datetime(md_lines[3]),
-                "sex": "NA",
-                "height": cls.parse_height(md_lines[5]),
-                "weight": cls.parse_weight(md_lines[6]),
-                "value1": cls.parse_value(md_lines[7]),
-                "value2": cls.parse_value(md_lines[8]),
-                **cls._parse_patient_metadata(md_lines[10]),
-            }
-
-        elif len(md_lines) > 11:
-            """
-            Format 2 (length=14):
-
-            # mID 805
-            # 'doc' (, )
-            # Dr. Falk Rauchfuß
-            # 24.12.2021 12:24
-            # Max Mustermann
-            # 24.12.1999
-            #
-            # weiblich
-            # 162 cm
-            # 54 kg
-            # 31,762406
-            # 513,0
-            #
-            # Nahrungskarenz: über 3 Std., Raucher: Nein, Sauerstoff: Nein, Beatmung: Nein, Medikation: Ja
-            #
-            # Wir berichten Ihnen über die durchgeführten Untersuchungen bei unserem gemeinsamen Patienten / unserer gemeinsamen Patientin:
-            # Der LiMAx-Test gibt die aktuelle Leberfunktionskapazität des CYP1A2-Systems an. Aktuell ist dieser Wert ...
-            """
-            md_dict = {
-                "mid": cls._parse_mid(md_lines[0]),
-                "datetime": cls.parse_datetime(md_lines[3]),
-                "sex": cls.parse_sex(md_lines[6]),
-                "height": cls.parse_height(md_lines[7]),
-                "weight": cls.parse_weight(md_lines[8]),
-                "value1": cls.parse_value(md_lines[9]),
-                "value2": cls.parse_value(md_lines[10]),
-                **cls._parse_patient_metadata(md_lines[11]),
-            }
-
-        else:
-            raise ValueError(
-                "Unsupported LiMAx MetaData format. Please send the LiMAx "
-                "file for debugging."
-            )
-
-        lx_metadata: LXMetaData = LXMetaData(**md_dict)
-        return lx_metadata
+    @staticmethod
+    def _parse_comments(lines: List[str]) -> List[str]:
+        """Parse comments."""
+        return lines
 
 
 def parse_limax_file(
@@ -263,7 +244,6 @@ def parse_limax_file(
         # limax_path = output_dir / f"{limax_csv.stem}.txt"
         json_path = output_dir / f"{limax_csv.stem}.json"
         fig_path = output_dir / f"{limax_csv.stem}.png"
-        console.print()
         console.rule(
             title=f"[bold white]Process '{limax_csv}'", align="left", style="[white]"
         )
@@ -332,6 +312,8 @@ def parse_limax_file(
         with open(json_path, "w") as f_json:
             f_json.write(lx.json(indent=2))
         plot_lx_matplotlib(lx, fig_path=fig_path)
+        console.print(f"Json: file://{json_path}")
+        console.print(f"Figure: file://{fig_path}")
 
     return lx
 
@@ -345,15 +327,16 @@ if __name__ == "__main__":
         EXAMPLE_LIMAX_PATIENT2018_PATH,
         EXAMPLE_LIMAX_PATIENT2022_PATH,
         PROCESSED_DIR,
+        RAW_DIR,
     )
 
     for path in [
-        # EXAMPLE_LIMAX_PATIENT1_PATH,
-        # EXAMPLE_LIMAX_PATIENT2_PATH,
-        # EXAMPLE_LIMAX_PATIENT3_PATH,
-        # EXAMPLE_LIMAX_PATIENT2017_PATH,
+        EXAMPLE_LIMAX_PATIENT1_PATH,
+        EXAMPLE_LIMAX_PATIENT2_PATH,
+        EXAMPLE_LIMAX_PATIENT3_PATH,
+        EXAMPLE_LIMAX_PATIENT2017_PATH,
         EXAMPLE_LIMAX_PATIENT2018_PATH,
-        # EXAMPLE_LIMAX_PATIENT2022_PATH,
+        EXAMPLE_LIMAX_PATIENT2022_PATH,
     ]:
         lx = parse_limax_file(limax_csv=path, output_dir=PROCESSED_DIR)
         # console.print(lx)
@@ -361,4 +344,4 @@ if __name__ == "__main__":
         console.print()
         console.print(lx.data.to_df().head(5))
 
-    # read_limax_dir(input_dir=RAW_DIR, output_dir=PROCESSED_DIR)
+    read_limax_dir(input_dir=RAW_DIR, output_dir=PROCESSED_DIR)

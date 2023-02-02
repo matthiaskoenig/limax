@@ -23,18 +23,17 @@ class LXMetaData(BaseModel):
     """
 
     mid: str
-    datetime: str = Field(repr=False)
+    datetime: str = Field(repr=True)
     height: float = Field(description="Height in [cm]")
     weight: float = Field(description="Weight in [kg]")
     sex: str = Field(description="Sex in {M, F, NA}")
     smoking: bool = Field(description="Smoking status")
-    oxygen: bool = Field(repr=False)
-    ventilation: bool = Field(repr=False)
-    medication: bool = Field(repr=False)
-    food_abstinence: str = Field(repr=False)
-    value1: float = Field(repr=False)
-    value2: float = Field(repr=False)
-    comments: str = Field(repr=False)
+    oxygen: bool = Field(repr=True)
+    ventilation: bool = Field(repr=True)
+    medication: bool = Field(repr=True)
+    food_abstinence: str = Field(repr=True)
+    values: List[float] = Field(repr=True)
+    comments: List[str] = Field(repr=False)
 
 
 class LXData(BaseModel):

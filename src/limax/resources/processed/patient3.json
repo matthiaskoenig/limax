@@ -10,8 +10,14 @@
     "ventilation": false,
     "medication": true,
     "food_abstinence": "> 3 hr",
-    "value1": 31.762406,
-    "value2": 513.0
+    "values": [
+      31.762406,
+      513.0
+    ],
+    "comments": [
+      "Wir berichten Ihnen \u00fcber die durchgef\u00fchrten Untersuchungen bei unserem gemeinsamen Patienten / unserer gemeinsamen Patientin:",
+      "Der LiMAx-Test gibt die aktuelle Leberfunktionskapazit\u00e4t des CYP1A2-Systems an. Aktuell ist dieser Wert ..."
+    ]
   },
   "data": {
     "time": [
