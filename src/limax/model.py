@@ -34,6 +34,7 @@ class LXMetaData(BaseModel):
     food_abstinence: str = Field(repr=False)
     value1: float = Field(repr=False)
     value2: float = Field(repr=False)
+    comments: str = Field(repr=False)
 
 
 class LXData(BaseModel):

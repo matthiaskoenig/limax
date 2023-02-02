@@ -41,34 +41,43 @@ class MetadataParser:
 
     @staticmethod
     def _parse_patient_metadata(
-        line: str, separator: str = ","
+        line: Optional[str], separator: str = ","
     ) -> Dict[str, Union[str, bool]]:
         """Parse patient metadata from metadata line.
 
         # Nahrungskarenz: über 3 Std., Raucher: Nein, Sauerstoff: Nein, Beatmung: Nein, Medikation: Ja
         """
-        tokens = line.split(separator)
-        d: Dict[str, str] = {}
-        for k, key in enumerate(MetadataParser.patient_metadata_fields):
-            try:
-                d[key] = tokens[k].split(":")[1].strip()
-            except IndexError:
-                logger.error(f"'{key}' could not be parsed from '{tokens[k]}'")
-                d[key] = "-"
+        if not line:
+            return {
+                "food_abstinence": "-",
+                "smoking": False,
+                "oxygen": False,
+                "ventilation": False,
+                "medication": False,
+            }
+        else:
+            tokens = line.split(separator)
+            d: Dict[str, str] = {}
+            for k, key in enumerate(MetadataParser.patient_metadata_fields):
+                try:
+                    d[key] = tokens[k].split(":")[1].strip()
+                except IndexError:
+                    logger.error(f"'{key}' could not be parsed from '{tokens[k]}'")
+                    d[key] = "-"
 
-        d_processed: Dict[str, Union[str, bool]] = {**d}
-        for key in ["smoking", "oxygen", "ventilation", "medication"]:
-            if d[key].lower() == "ja":
-                d_processed[key] = True
-            elif d[key].lower() == "nein":
-                d_processed[key] = False
-            else:
-                logger.error(f"Invalid value in metadata: '{key}: {d[key]}'")
-                d_processed[key] = False
+            d_processed: Dict[str, Union[str, bool]] = {**d}
+            for key in ["smoking", "oxygen", "ventilation", "medication"]:
+                if d[key].lower() == "ja":
+                    d_processed[key] = True
+                elif d[key].lower() == "nein":
+                    d_processed[key] = False
+                else:
+                    logger.error(f"Invalid value in metadata: '{key}: {d[key]}'")
+                    d_processed[key] = False
 
-        if d["food_abstinence"] == "über 3 Std.":
-            d_processed["food_abstinence"] = "> 3 hr"
-        return d_processed
+            if d["food_abstinence"] == "über 3 Std.":
+                d_processed["food_abstinence"] = "> 3 hr"
+            return d_processed
 
     @staticmethod
     def _parse_mid(line: str) -> str:
@@ -150,6 +159,28 @@ class MetadataParser:
     @classmethod
     def parse(cls, md_lines: List[str]) -> LXMetaData:
         """Parse metadata from metadata lines."""
+        mid = cls._parse_mid(md_lines[0]),
+        datetime = cls.parse_datetime(md_lines[3])
+
+        # max integer
+        k_pmd: int: np.
+        line_pmd: Optional[str] = None
+        line_weight: Optional[str] = None
+        line_height: Optional[str] = None
+        line_sex: Optional[str] = None
+        lines_value: List[str] = []
+        lines_comment: List[str] = []  # all the lines after Nahrungskarenz
+        for k, line in enumerate(md_lines):
+
+
+            if line.startswith("Nahrungskarenz"):
+                line_pmd = line
+            elif line.endswith(" cm"):
+                line_height = line
+            elif line.weight(" cm"):
+                line_height = line
+
+        pmd_dict = cls._parse_patient_metadata(line_pmd)
 
         md_dict: Dict[str, Any]
         if len(md_lines) == 11:
@@ -179,7 +210,7 @@ class MetadataParser:
                 **cls._parse_patient_metadata(md_lines[10]),
             }
 
-        elif len(md_lines) == 14:
+        elif len(md_lines) > 11:
             """
             Format 2 (length=14):
 
@@ -246,10 +277,12 @@ def parse_limax_file(
 
         # cleanup lines
         for line in raw_lines:
+            # remove comment character
             if line.startswith("# "):
                 line = line[2:]
-            # remove ending characters
+            # strip whitespace
             line = line.strip()
+            # remove empty lines
             if len(line) > 0:
                 lines.append(line)
 
@@ -308,13 +341,19 @@ if __name__ == "__main__":
         EXAMPLE_LIMAX_PATIENT1_PATH,
         EXAMPLE_LIMAX_PATIENT2_PATH,
         EXAMPLE_LIMAX_PATIENT3_PATH,
+        EXAMPLE_LIMAX_PATIENT2017_PATH,
+        EXAMPLE_LIMAX_PATIENT2018_PATH,
+        EXAMPLE_LIMAX_PATIENT2022_PATH,
         PROCESSED_DIR,
     )
 
     for path in [
-        EXAMPLE_LIMAX_PATIENT1_PATH,
-        EXAMPLE_LIMAX_PATIENT2_PATH,
-        EXAMPLE_LIMAX_PATIENT3_PATH,
+        # EXAMPLE_LIMAX_PATIENT1_PATH,
+        # EXAMPLE_LIMAX_PATIENT2_PATH,
+        # EXAMPLE_LIMAX_PATIENT3_PATH,
+        # EXAMPLE_LIMAX_PATIENT2017_PATH,
+        EXAMPLE_LIMAX_PATIENT2018_PATH,
+        # EXAMPLE_LIMAX_PATIENT2022_PATH,
     ]:
         lx = parse_limax_file(limax_csv=path, output_dir=PROCESSED_DIR)
         # console.print(lx)
