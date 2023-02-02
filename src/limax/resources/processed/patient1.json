@@ -10,8 +10,12 @@
     "ventilation": false,
     "medication": true,
     "food_abstinence": "> 3 hr",
-    "value1": 43.295187,
-    "value2": 44.395187
+    "values": [
+      43.295187,
+      44.395187,
+      630.0
+    ],
+    "comments": []
   },
   "data": {
     "time": [

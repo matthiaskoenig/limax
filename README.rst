@@ -49,6 +49,10 @@ Features include:
 
 If you have any questions or issues please `open an issue <https://github.com/matthiaskoenig/limax/issues>`__.
 
+.. image:: https://github.com/matthiaskoenig/limax/raw/develop/src/limax/resources/processed/example_anonym_2022.png
+   :align: left
+   :alt: limax logo
+
 How to cite
 ===========
 
@@ -90,7 +94,7 @@ After installation LiMAx analysis can be performed using the :code:`limax` comma
     
     ────────────────────────────────────────────────────────────────────────────────
     💉 LIMAX ANALYSIS 💉
-    Version 0.2.4 (https://github.com/matthiaskoenig/limax)
+    Version 0.3.1 (https://github.com/matthiaskoenig/limax)
     Citation https://doi.org/10.5281/zenodo.7382669
     ────────────────────────────────────────────────────────────────────────────────
     Example processing single LiMAx raw file:
