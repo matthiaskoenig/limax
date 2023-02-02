@@ -70,7 +70,8 @@ def plot_lx_matplotlib(lx: LX, fig_path: Optional[Path] = None) -> None:
     )
 
     for ax in (ax2, ax3):
-        ax.plot(np.array(lx.data.time) / 60, lx.data.dob, "-o", color="black")
+        ax.plot(np.array(lx.data.time) / 60, lx.data.dob, "-o", color="black",
+                markeredgecolor="black", markerfacecolor="tab:blue")
         ax.grid(True)
 
         ax.set_xlabel("Time [min]", fontdict={"weight": "bold"})

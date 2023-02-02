@@ -49,6 +49,9 @@ Features include:
 
 If you have any questions or issues please `open an issue <https://github.com/matthiaskoenig/limax/issues>`__.
 
+Example plot
+============
+
 .. image:: https://github.com/matthiaskoenig/limax/raw/develop/src/limax/resources/processed/example_anonym_2022.png
    :align: left
    :alt: limax logo
